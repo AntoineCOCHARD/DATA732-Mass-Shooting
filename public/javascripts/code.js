@@ -42,6 +42,7 @@ let colorsRace = {"White" : "#00adb5", "Black" : '#ff2e63', "Asian" : '#fce38a',
 let numberOfMassShooting = 0;
 let maxNumberMassShootingPerState= 0;
 let dataset = {};
+let dataset2 = {};
 let fips;
 
 let capitals = {};
@@ -50,13 +51,14 @@ let tableFirstId = 0;
 
 let bigData;
 let bigData2;
+let dataHAHAH
 
 d3.json('data/fipsToState.json').then(function (data) {
     fips = data;
 
     d3.csv('data/Mass_shooting.csv').then(function (data2) {
         bigData2 = data2;
-        console.log(bigData2);
+        dataHAHAH = data2
     });
     d3.json('data/capital.json').then(function (capitalData) {
         capitalData.states.forEach(function (d) {
@@ -76,9 +78,17 @@ d3.json('data/fipsToState.json').then(function (data) {
         bigData = data;
 
         // Get the number of mass shootings
-        numberOfMassShooting = data.length;
+        numberOfMassShooting = dataHAHAH.length;
 
         // Populate the dataset
+        dataHAHAH.forEach(function (d) {
+
+            if (dataset2.hasOwnProperty(Number(fips[d.State]))) {
+                dataset2[Number(fips[d.State])].push(d);
+            } else {
+                dataset2[Number(fips[d.State])] = [d];
+            }
+        });
         data.forEach(function (d) {
             if (dataset.hasOwnProperty(Number(fips[d.fields.state]))) {
                 dataset[Number(fips[d.fields.state])].push(d);
@@ -88,9 +98,9 @@ d3.json('data/fipsToState.json').then(function (data) {
         });
 
         // Get the max number of shootings
-        for (let id in dataset) {
-            if (dataset[id].length > maxNumberMassShootingPerState) {
-                maxNumberMassShootingPerState = dataset[id].length;
+        for (let id in dataset2) {
+            if (dataset2[id].length > maxNumberMassShootingPerState) {
+                maxNumberMassShootingPerState = dataset2[id].length;
             }
         }
 
@@ -121,7 +131,6 @@ svgTitle.append('g')
         return 50 - d3.select(this).node().getBBox().height / 2;
     });
 
-
 let box = document.querySelector('.barchart');
 let bwidth = box.clientWidth;
 let bheight = box.clientHeight;
@@ -134,25 +143,20 @@ let svgTarget = d3.select('.barchart').append('svg')
     .attr("transform",
         "translate(" + margin.left + "," + margin.top + ")");
 
-let mbox = document.querySelector('.map');
-let mwidth = mbox.clientWidth;
-let mheight = mbox.clientHeight;
-
-
 let svgMap = d3.select('.map').append('svg')
     .attr('class', 'center-container')
     .attr('height', height + margin.top + margin.bottom)
-    .attr('width',mwidth)
+    .attr('width', width + margin.left + margin.right)
     .attr('x', 0)
     .attr('y', 0);
 
 svgMap.append('rect')
     .attr('class', 'background center-container')
     .attr('height', height + margin.top + margin.bottom)
-    .attr('width', mwidth)
+    .attr('width', width + margin.left + margin.right)
     .on('click', clicked);
 
-let svgGender = d3.select('.piechart').append('svg')
+let svgGender = d3.select('.viz').append('svg')
     .attr('class', 'center-container')
     .attr('height', height + margin.top + margin.bottom)
     .attr('width', width * 0.6 + margin.left + margin.right)
@@ -241,7 +245,7 @@ function ready(us) {
         });
 
     // We plot the points representing the density of the mass shootings per states
-    for (let id in dataset) {
+    /*for (let id in dataset) {
         g.append("g").append("circle")
             .attr("fill", "red")
             .attr("stroke", "red")
@@ -261,7 +265,7 @@ function ready(us) {
                 mouseOver({id : Number(id)});
             })
             .on('mouseout', reset());
-    }
+    }*/
 
     // Then I need to make the scaling map
     let circles = [1, 10, 20, 30, 34];
@@ -463,8 +467,8 @@ function drawPieCharts(data) {
         max += data[0].data[key].value;
     }
 
-    for (let i = 0; i < 4; i++) {
-        for (let j = 0; j < 1; j++) {
+    for (let i = 0; i < 2; i++) {
+        for (let j = 0; j < 2; j++) {
 
             g = svgGender.append("g")
                 .attr('class', 'center-container')
@@ -663,8 +667,8 @@ function showTable(stateID) {
         fate = "Unknown";
         victims = "-";
 
-        if (d.fields.date) {
-            date = d.fields.date;
+        if (d.Date) {
+            date = d.Date;
         }
 
         if (d.fields.average_shooter_age) {
@@ -719,9 +723,11 @@ function showBarChart(stateId) {
 
     if (stateId === 0) {
         theData = bigData2;
+        console.log(theData)
 
     } else {
-        theData = dataset[stateId];
+        theData = dataset2[stateId];
+        console.log(fips)
     }
 
     // If there is no shooting we return
@@ -735,6 +741,7 @@ function showBarChart(stateId) {
     
 
     theData.forEach(function (d) {
+        
         Target = d['Target'];
 
         if (stateId === 0) {
@@ -744,6 +751,7 @@ function showBarChart(stateId) {
                 shootingsPerTarget[Target] = 1;
             }
         } else {
+            
             if (shootingsPerTarget[Target]) {
                 shootingsPerTarget[Target]++;
             } else {
@@ -751,35 +759,59 @@ function showBarChart(stateId) {
             }
         }
     });
+    console.log(shootingsPerTarget)
 
-    let other = 0;
+    
 
-    for (key in shootingsPerTarget) {
-        if (shootingsPerTarget != null){
-            if (shootingsPerTarget[key] >= 5) {
-                dataToDisplay.push({Target : key, value : shootingsPerTarget[key]});
-            
+
+    if (stateId === 0) {
+        let other = 0;
+        for (key in shootingsPerTarget) {
+            if (shootingsPerTarget != null){
+                if (shootingsPerTarget[key] >= 5) {
+                    dataToDisplay.push({Target : key, value : shootingsPerTarget[key]});
+                
+                } else {
+                    other = other + shootingsPerTarget[key]
+                }
             } else {
                 other = other + shootingsPerTarget[key]
             }
-        } else {
-            other = other + shootingsPerTarget[key]
+            
         }
-        
+        dataToDisplay.push({Target : "Other", value : other});
+    } else {
+        for (key in shootingsPerTarget) {
+            if (shootingsPerTarget != null){
+                dataToDisplay.push({Target : key, value : shootingsPerTarget[key]});                             
+            }
+            
+        }
     }
 
-    dataToDisplay.push({Target : "Other", value : other});
+    
     
     let colorScaleChart = d3.scaleLinear().domain([1, d3.max(dataToDisplay,  d => { return d.value; })]).range(['orange', 'red']);
     let barColor = d3.interpolateInferno(0.1);
     let highlightColor = d3.interpolateInferno(0.3);
     
+    
+    let max =0;
+    console.log("OUIIIIII")
+    dataToDisplay.forEach(element => {
+        
+        if (element['value'] > max) {
+            max = element['value']
+        }
+    });
+    console.log(max)
+
     // Add X axis
     const x = d3.scaleLinear()
-    .domain([0, 210])
-    .range([ 0, width]);
-  svgTarget.append("g")
-    .attr("transform", `translate(0, ${height})`)
+    .domain([0, max+1])
+    .range([ 0, bwidth*0.75]);
+    svgTarget.append("g")
+    .attr("transform", `translate(${bwidth*0.18}, ${bheight*0.9})`)
     .call(d3.axisBottom(x))
     .selectAll("text")
       .attr("transform", "translate(-10,0)rotate(-45)")
@@ -787,10 +819,11 @@ function showBarChart(stateId) {
 
   // Y axis
   const y = d3.scaleBand()
-    .range([ 0, height ])
+    .range([ 0, bheight*0.9 ])
     .domain(dataToDisplay.map(d => d.Target))
     .padding(.1);
     svgTarget.append("g")
+    .attr("transform", `translate(${bwidth*0.18}, 0)`)
     .call(d3.axisLeft(y))
 
   //Bars
@@ -802,7 +835,8 @@ function showBarChart(stateId) {
     .attr("y", d => y(d.Target))
     .attr("width", d => x(d.value))
     .attr("height", y.bandwidth()*0.75)
-    .attr("fill", "#69b3a2");
+    .attr("fill", "#69b3a2")
+    .attr("transform", `translate(${bwidth*0.18}, 0)`);
 
     // Labels
     svgTarget.selectAll(".label")
@@ -817,7 +851,8 @@ function showBarChart(stateId) {
         .attr("height", 0)
         .text( d => { return d.value; })
         .attr("x",  d => { return x(d.value) + .1; })
-        .attr("dy", "-.7em");
+        .attr("dy", "-.7em")
+        .attr("transform", `translate(${bwidth*0.18}, 0)`);
     
 }
 
@@ -833,25 +868,29 @@ function getStateDataForPie(stateID) {
     let shooterSex = {};
 
     let dataToLoop;
-
+    
+    
     if (stateID === 0) {
-        dataToLoop = bigData;
+        dataToLoop = bigData2;
     } else {
         if (!dataset[stateID]) {return;}
 
-        dataToLoop = dataset[stateID];
+        dataToLoop = dataset2[stateID];
+        
     }
 
     dataToLoop.forEach(function (d) {
+        
+        
 
         // Mental Illness - fields.history_of_mental_illness_general
-        if ((d['fields']['history_of_mental_illness_general'].indexOf('Yes') !== -1)) {
+        if ((d['Mental Health Issues'].indexOf('Yes') !== -1)) {
             if (mentalIllness['Yes']) {
                 mentalIllness['Yes']++;
             } else {
                 mentalIllness['Yes'] = 1;
             }
-        } else if ((d['fields']['history_of_mental_illness_general'].indexOf('Unknown') !== -1)) {
+        } else if ((d['Mental Health Issues'].indexOf('Unknown') !== -1)) {
             if (mentalIllness['Unknown']) {
                 mentalIllness['Unknown']++;
             } else {
@@ -864,7 +903,7 @@ function getStateDataForPie(stateID) {
                 mentalIllness['No'] = 1;
             }
         }
-
+        /*
         // Type of Gun
         if ((d['fields']['type_of_gun_general'].indexOf('Handgun') !== -1)) {
             if (typeOfGun['Handgun']) {
@@ -951,7 +990,7 @@ function getStateDataForPie(stateID) {
                 shooterSex['Unknown'] = 1;
             }
         }
-
+        */
     });
 
     let mentalIllnessArray = [];
@@ -968,7 +1007,7 @@ function getStateDataForPie(stateID) {
     mentalIllnessArray.sort(function (a, b) {
         return a.value > b.value;
     });
-
+    
     i = 0;
     for (let key in typeOfGun) {
         typeOfGunArray.push({id : i, title : key, value : typeOfGun[key]});
