@@ -103,7 +103,7 @@ d3.json('data/fipsToState.json').then(function (data) {
 
 // SVGs
 
-let svgTitle = d3.select('.viz').append('svg')
+let svgTitle = d3.select('.title').append('svg')
     .attr('class', 'center-container')
     .attr('height', 50)
     .attr('width', (width + width * 0.8) + 2 * margin.left + 2 * margin.right)
@@ -122,7 +122,7 @@ svgTitle.append('g')
     });
 
 
-let svgTarget = d3.select('.viz').append('svg')
+let svgTarget = d3.select('.barchart').append('svg')
     .attr('class', 'center-container')
     .attr('height', height * 0.6 + 4 * margin.top + 4 * margin.bottom)
     .attr('width', width * 0.7 + margin.left + margin.right)
@@ -133,7 +133,7 @@ let svgTarget = d3.select('.viz').append('svg')
 
 
 
-let svgMap = d3.select('.viz').append('svg')
+let svgMap = d3.select('.map').append('svg')
     .attr('class', 'center-container')
     .attr('height', height + margin.top + margin.bottom)
     .attr('width', width + margin.left + margin.right)
@@ -750,7 +750,7 @@ function showBarChart(stateId) {
 
     for (key in shootingsPerTarget) {
         if (shootingsPerTarget != null){
-            if (shootingsPerTarget[key] >= 3) {
+            if (shootingsPerTarget[key] >= 5) {
                 dataToDisplay.push({Target : key, value : shootingsPerTarget[key]});
             
             } else {
@@ -783,13 +783,15 @@ function showBarChart(stateId) {
   const y = d3.scaleBand()
     .range([ 0, height ])
     .domain(dataToDisplay.map(d => d.Target))
+    .padding(.1);
     svgTarget.append("g")
     .call(d3.axisLeft(y))
 
   //Bars
   svgTarget.selectAll("myRect")
     .data(dataToDisplay)
-    .join("rect")
+    .enter()
+    .append("rect")
     .attr("x", x(0) )
     .attr("y", d => y(d.Target))
     .attr("width", d => x(d.value))
