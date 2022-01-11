@@ -122,31 +122,37 @@ svgTitle.append('g')
     });
 
 
+let box = document.querySelector('.barchart');
+let bwidth = box.clientWidth;
+let bheight = box.clientHeight;
+
 let svgTarget = d3.select('.barchart').append('svg')
     .attr('class', 'center-container')
-    .attr('height', height * 0.6 + 4 * margin.top + 4 * margin.bottom)
-    .attr('width', width * 0.7 + margin.left + margin.right)
+    .attr('height', bheight)
+    .attr('width', bwidth)
     .append("g")
     .attr("transform",
         "translate(" + margin.left + "," + margin.top + ")");
 
-
+let mbox = document.querySelector('.map');
+let mwidth = mbox.clientWidth;
+let mheight = mbox.clientHeight;
 
 
 let svgMap = d3.select('.map').append('svg')
     .attr('class', 'center-container')
     .attr('height', height + margin.top + margin.bottom)
-    .attr('width', width + margin.left + margin.right)
+    .attr('width',mwidth)
     .attr('x', 0)
     .attr('y', 0);
 
 svgMap.append('rect')
     .attr('class', 'background center-container')
     .attr('height', height + margin.top + margin.bottom)
-    .attr('width', width + margin.left + margin.right)
+    .attr('width', mwidth)
     .on('click', clicked);
 
-let svgGender = d3.select('.viz').append('svg')
+let svgGender = d3.select('.piechart').append('svg')
     .attr('class', 'center-container')
     .attr('height', height + margin.top + margin.bottom)
     .attr('width', width * 0.6 + margin.left + margin.right)
@@ -457,8 +463,8 @@ function drawPieCharts(data) {
         max += data[0].data[key].value;
     }
 
-    for (let i = 0; i < 2; i++) {
-        for (let j = 0; j < 2; j++) {
+    for (let i = 0; i < 4; i++) {
+        for (let j = 0; j < 1; j++) {
 
             g = svgGender.append("g")
                 .attr('class', 'center-container')
