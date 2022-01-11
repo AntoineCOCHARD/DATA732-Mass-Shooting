@@ -25,8 +25,8 @@ for(key in globalPopulation) {
 }
 
 let statesPopulationColor = d3.scaleLinear()
-    .domain([minPopulation, maxPopulation])
-    .range(["#b2dffb", '#0c084c']);
+    .domain([0, 635])
+    .range(["#8BD9AD", '#ff0000']);
 
 
 let scaleProportionShootingsPerState;
@@ -187,6 +187,32 @@ let g = svgMap.append("g")
     .attr('height', height + margin.top + margin.bottom);
 
 function ready(us) {
+
+    let count = 0;
+    let step = 0;
+
+    let maxShooting = 0;
+    let shooting;
+
+    let globalShooting = {}
+
+    for (const [key, value] of Object.entries(dataset2)) {
+        shooting = 0 
+        value.forEach(function (d) {
+            if (d["Total victims"] != "") {
+                shooting +=  parseInt(d["Total victims"])
+                
+            }
+        });
+        if (shooting >maxShooting ) {
+            maxShooting = shooting
+        }
+        if (value[0]["State"] != "") {
+            globalShooting[value[0]["State"]] = shooting;
+        }
+      }
+      console.log(globalShooting)
+
     g.append("g")
         .attr("id", "counties")
         .selectAll("path")
@@ -214,10 +240,10 @@ function ready(us) {
             if (!(d.id === 72 || d.id === 78)) {
                 if (d.id < 10) {
                     //console.log(globalPopulation[getKeyByValue(fips, "0" + d.id)]);
-                    return statesPopulationColor(globalPopulation[getKeyByValue(fips, "0" + d.id)]);
+                    return statesPopulationColor(globalShooting[getKeyByValue(fips, "0" + d.id)]);
                 } else {
                     //console.log(globalPopulation[getKeyByValue(fips, "" + d.id)]);
-                    return statesPopulationColor(globalPopulation[getKeyByValue(fips, "" + d.id)]);
+                    return statesPopulationColor(globalShooting[getKeyByValue(fips, "" + d.id)]);
                 }
             }
         })
@@ -239,7 +265,7 @@ function ready(us) {
         })
         .style('font-style', 'italic')
         .text(function (d) {
-            return "Fig. 1 : Map of the United States Of America representing mass shooting proportion per state";
+            return "Map of the United States Of America representing number of mass shootings per state";
         }).attr('x', function () {
             return 0;
         });
@@ -268,52 +294,21 @@ function ready(us) {
     }*/
 
     // Then I need to make the scaling map
-    let circles = [1, 10, 20, 30, 34];
 
-    let count = 0;
-    let step = 0;
-
-    circles.forEach(function (circleValue) {
-        g.append("circle")
-            .attr('r', scaleProportionShootingsPerState(circleValue))
-            .attr('cx', 20)
-            .style('opacity', 0.5)
-            .attr('cy', function (d) {
-                return 300 - step;
-            })
-            .attr('fill', "red");
-
-        g.append("text")
-            .attr('x', 50)
-            .attr('y', function (d) {
-                return 300 - step + (scaleProportionShootingsPerState(circleValue) * 0.5);
-            })
-            .text(function (d) {
-                return  circleValue;
-            });
-
-        step += (2 * scaleProportionShootingsPerState(circleValue) + 15);
-        count++;
-    });
+    
 
     g.append("text")
         .attr('x', 0)
         .attr('y', 0)
-        .text(minPopulation)
+        .text("0")
         .style('font-size', '12px');
 
     g.append("text")
         .attr('x', 120)
         .attr('y', 0)
-        .text(maxPopulation)
+        .text(maxShooting)
         .style('font-size', '12px');
 
-    g.append("text")
-        .attr('x', 0)
-        .attr('y', function (d) {
-            return 300 + 30;
-        })
-        .text("Number of mass shootings");
 
     g.append("text")
         .attr('id', 'legendDensity')
@@ -325,9 +320,9 @@ function ready(us) {
 
     let rangeColorToPos = d3.scaleLinear()
         .range([0, d3.select("#legendDensity").node().getBBox().width])
-        .domain([minPopulation, maxPopulation]);
+        .domain([0, maxShooting]);
 
-    let rangeColor = d3.range(minPopulation, maxPopulation, 100000);
+    let rangeColor = d3.range(0, maxShooting, 2);
     g.selectAll('rect')
         .data(rangeColor)
         .enter()
@@ -723,11 +718,8 @@ function showBarChart(stateId) {
 
     if (stateId === 0) {
         theData = bigData2;
-        console.log(theData)
-
     } else {
         theData = dataset2[stateId];
-        console.log(fips)
     }
 
     // If there is no shooting we return
@@ -759,14 +751,16 @@ function showBarChart(stateId) {
             }
         }
     });
-    console.log(shootingsPerTarget)
 
     
-
+    let other = 0;
 
     if (stateId === 0) {
-        let other = 0;
+        
         for (key in shootingsPerTarget) {
+            if (key === '') {
+                other = other + shootingsPerTarget[key]
+            } else {
             if (shootingsPerTarget != null){
                 if (shootingsPerTarget[key] >= 5) {
                     dataToDisplay.push({Target : key, value : shootingsPerTarget[key]});
@@ -776,17 +770,24 @@ function showBarChart(stateId) {
                 }
             } else {
                 other = other + shootingsPerTarget[key]
-            }
+            } }
             
         }
         dataToDisplay.push({Target : "Other", value : other});
     } else {
         for (key in shootingsPerTarget) {
-            if (shootingsPerTarget != null){
-                dataToDisplay.push({Target : key, value : shootingsPerTarget[key]});                             
-            }
             
+            if (shootingsPerTarget != null){
+                if (key === '') {
+                    other = other + shootingsPerTarget[key]  
+                } else {
+                dataToDisplay.push({Target : key, value : shootingsPerTarget[key]});    
+                }                        
+            }
         }
+        if (other != 0) {
+            dataToDisplay.push({Target : "Other", value : other}); 
+        }  
     }
 
     
@@ -797,21 +798,19 @@ function showBarChart(stateId) {
     
     
     let max =0;
-    console.log("OUIIIIII")
     dataToDisplay.forEach(element => {
         
         if (element['value'] > max) {
             max = element['value']
         }
     });
-    console.log(max)
 
     // Add X axis
     const x = d3.scaleLinear()
     .domain([0, max+1])
     .range([ 0, bwidth*0.75]);
     svgTarget.append("g")
-    .attr("transform", `translate(${bwidth*0.18}, ${bheight*0.9})`)
+    .attr("transform", `translate(${bwidth*0.18}, ${bheight*0.85})`)
     .call(d3.axisBottom(x))
     .selectAll("text")
       .attr("transform", "translate(-10,0)rotate(-45)")
@@ -819,7 +818,7 @@ function showBarChart(stateId) {
 
   // Y axis
   const y = d3.scaleBand()
-    .range([ 0, bheight*0.9 ])
+    .range([ 0, bheight*0.85 ])
     .domain(dataToDisplay.map(d => d.Target))
     .padding(.1);
     svgTarget.append("g")
@@ -853,6 +852,24 @@ function showBarChart(stateId) {
         .attr("x",  d => { return x(d.value) + .1; })
         .attr("dy", "-.7em")
         .attr("transform", `translate(${bwidth*0.18}, 0)`);
+
+    svgTarget.append('g').append("text")
+        .attr("transform", `translate(${bwidth*0.18}, ${bheight*0.95})`)
+        .attr('y', function (d) {
+            return 0;
+        })
+        .style('font-style', 'italic')
+        .text(function (d) {
+            if (stateId === 0) {
+                return "Targets of mass shooting in the US";
+            }
+            if (stateId < 10) {
+                return "Targets of mass shooting in " + getKeyByValue(fips, "0" + stateId);
+            }
+            return "Targets of mass shooting in " + getKeyByValue(fips, "" + stateId);
+        }).attr('x', function () {
+        return 0;
+    });
     
 }
 
