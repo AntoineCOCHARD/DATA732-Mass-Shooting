@@ -12,7 +12,9 @@ In the beggining, the bar chart and the pie charts show data about all of the US
 
 ## How to Use :
 
-**If you just want to visualise it, our visualisation is available here: http://forrayg.xyz/mass_shooting_us**
+**If you just want to visualise it, it is currently hosted on an aws server, our visualisation is available here: http://forrayg.xyz/mass_shooting_us**
+
+
 
 First, clone the repo in a folder using :
 ```sh
