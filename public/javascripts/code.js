@@ -485,6 +485,7 @@ function drawPieCharts(id) {
     }
 
     dataCause = {}
+    dataRace = {}
     dataMental = {"Yes": 0, "No": 0, "Unknown": 0}
 
     if (id === 0) {
@@ -510,6 +511,20 @@ function drawPieCharts(id) {
                 }
             }
 
+            if(dataRace[d["Race"]]) {
+                dataRace[d["Race"]] += 1;
+            } else {
+                if(d["Race"] == "") {
+                    if (dataRace["unknown"]) {
+                        dataRace["unknown"] += 1;
+                    } else {
+                        dataRace["unknown"] = 1;
+                    }
+                } else {
+                    dataRace[d["Race"]] = 1;
+                }
+            }
+
             if (d["Mental Health Issues"] === "Yes") {
                 dataMental["Yes"]+=1
             } else if (d["Mental Health Issues"] === "No") {
@@ -519,7 +534,6 @@ function drawPieCharts(id) {
             }
         }
     });
-    console.log(dataCause)
 
     var colorMental = d3.scaleOrdinal()
         .domain(dataMental)
@@ -529,12 +543,17 @@ function drawPieCharts(id) {
         .domain(dataMental)
         .range(["#FFDA3B", "#E68C27", "#FA583C", "#E32BBD","#8130FB" ,"#9F3BFF" , "#274CE6","#3DE4FA","#2BE372","#89FB30" ])
 
+    var colorRace = d3.scaleOrdinal()
+        .domain(dataRace)
+        .range(["#E68C27", "#FA583C", "#E32BBD","#8130FB" ,"#9F3BFF" , "#274CE6","#3DE4FA","#2BE372","#89FB30" ])
+
     let radius = 100;
     var pie = d3.pie().value(function(d) {return d.value; }).sort(null);
     var data_ready = pie(d3.entries(data))
 
     var data_ready_Mental = pie(d3.entries(dataMental))
     var data_ready_Cause = pie(d3.entries(dataCause))
+    var data_ready_Race = pie(d3.entries(dataRace))
 
     var arcGenerator = d3.arc()
         .innerRadius(0)
@@ -555,8 +574,7 @@ function drawPieCharts(id) {
     )
     .attr('fill', function(d){ return(colorMental(d.data.key)) })
     .attr("stroke", "black")
-    .style("stroke-width", "2px")
-    .style("opacity", 0.7)
+    .style("stroke-width", "1px")
 
     svgPie1.selectAll('mySlices')
         .data(data_ready_Mental)
@@ -569,11 +587,12 @@ function drawPieCharts(id) {
 
 
     var lenght_Cause = 0
-
+    
     for (const [key, value] of Object.entries(dataCause)) {
         lenght_Cause += value;
-      }
+    }
 
+    
 
     svgPie2.selectAll('mySlices')
     .data(data_ready_Cause)
@@ -603,18 +622,41 @@ function drawPieCharts(id) {
         .style("text-anchor", "middle")
         .style("font-size", 17)
 
+
+
+    var lenght_Race = 0
+
+    for (const [key, value] of Object.entries(dataRace)) {
+        lenght_Race += value;
+    }
+    
     svgPie3.selectAll('mySlices')
-    .data(data_ready)
+    .data(data_ready_Race)
     .enter()
     .append('path')
     .attr('d', d3.arc()
       .innerRadius(0)
       .outerRadius(radius)
     )
-    .attr('fill', function(d){ return(color(d.data.key)) })
+    .attr('fill', function(d){ return(colorRace(d.data.key)) })
     .attr("stroke", "black")
-    .style("stroke-width", "2px")
-    .style("opacity", 0.7)
+    .style("stroke-width", "1px")
+
+    svgPie3.selectAll('mySlices')
+        .data(data_ready_Race)
+        .enter()
+        .append('text')
+        .text(function(d){ 
+            if (d.data.value > lenght_Race/5) {
+                return d.data.key
+            } else {
+                return ""
+            }
+            
+            })
+        .attr("transform", function(d) { return "translate(" + arcGenerator.centroid(d) + ")";  })
+        .style("text-anchor", "middle")
+        .style("font-size", 17)
 
 }
 
