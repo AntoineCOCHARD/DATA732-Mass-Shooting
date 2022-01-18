@@ -26,7 +26,7 @@ for(key in globalPopulation) {
 
 let statesPopulationColor = d3.scaleLinear()
     .domain([0, 635])
-    .range(["#8BD9AD", '#ff0000']);
+    .range(["#6e40aa","#ff5375","#aff05b"]);
 
 
 let scaleProportionShootingsPerState;
@@ -170,19 +170,19 @@ let svgPie1 = d3.select('.pie1').append('svg')
     .attr('height', pie_height)
     .attr('width', pie_width)
     .append("g")
-    .attr("transform", "translate(" + pie_width / 2 + "," + pie_height / 3 + ")");
+    .attr("transform", "translate(" + pie_width / 2 + "," + pie_height / 2 + ")");
 
 let svgPie2 = d3.select('.pie2').append('svg')
     .attr('height', pie_height)
     .attr('width', pie_width)
     .append("g")
-    .attr("transform", "translate(" + pie_width / 2 + "," + pie_height /3 + ")");
+    .attr("transform", "translate(" + pie_width / 2 + "," + pie_height /2 + ")");
 
 let svgPie3 = d3.select('.pie3').append('svg')
 .attr('height', pie_height)
 .attr('width', pie_width)
     .append("g")
-    .attr("transform", "translate(" + pie_width / 2 + "," + pie_height /3+ ")");
+    .attr("transform", "translate(" + pie_width / 2 + "," + pie_height /2+ ")");
 
 
 let projection = d3.geoAlbersUsa()
@@ -278,12 +278,7 @@ function ready(us) {
         .attr('y', function (d) {
             return g.node().getBBox().height + 50;
         })
-        .style('font-style', 'italic')
-        .text(function (d) {
-            return "Map of the United States Of America representing number of victims of mass shootings per state";
-        }).attr('x', function () {
-            return 0;
-        });
+        .style('font-style', 'italic');
 
     // We plot the points representing the density of the mass shootings per states
     /*for (let id in dataset) {
@@ -473,6 +468,10 @@ svgTitle2.append('g')
 
 function drawPieCharts(id) {
 
+    svgPie1.selectAll("*").remove();
+    svgPie2.selectAll("*").remove();
+    svgPie3.selectAll("*").remove();
+
 
     var data =  {a: 9, b: 20, c:30, d:8, e:12}
 
@@ -515,10 +514,10 @@ function drawPieCharts(id) {
                 dataRace[d["Race"]] += 1;
             } else {
                 if(d["Race"] == "") {
-                    if (dataRace["unknown"]) {
-                        dataRace["unknown"] += 1;
+                    if (dataRace["Unknown"]) {
+                        dataRace["Unknown"] += 1;
                     } else {
-                        dataRace["unknown"] = 1;
+                        dataRace["Unknown"] = 1;
                     }
                 } else {
                     dataRace[d["Race"]] = 1;
@@ -535,52 +534,84 @@ function drawPieCharts(id) {
         }
     });
 
-    var colorMental = d3.scaleOrdinal()
-        .domain(dataMental)
-        .range(["#5A60FA", "#77FA42", "#AD5024"])
+    if (dataMental["Yes"] === 0) {
+        if (dataMental["No"] === 0) {
+            if (dataMental["Unknown"] === 0) {
+                return;
+    }}}
 
-    var colorCause = d3.scaleOrdinal()
-        .domain(dataMental)
-        .range(["#FFDA3B", "#E68C27", "#FA583C", "#E32BBD","#8130FB" ,"#9F3BFF" , "#274CE6","#3DE4FA","#2BE372","#89FB30" ])
+    
 
-    var colorRace = d3.scaleOrdinal()
-        .domain(dataRace)
-        .range(["#E68C27", "#FA583C", "#E32BBD","#8130FB" ,"#9F3BFF" , "#274CE6","#3DE4FA","#2BE372","#89FB30" ])
-
-    let radius = 100;
-    var pie = d3.pie().value(function(d) {return d.value; }).sort(null);
-    var data_ready = pie(d3.entries(data))
+    let radius = pie_width/3;
+    var pie = d3.pie().value(function(d) {return d.value; })
+        .sort(function(a, b) { console.log(a) ; return d3.descending(a.value, b.value);} )
 
     var data_ready_Mental = pie(d3.entries(dataMental))
     var data_ready_Cause = pie(d3.entries(dataCause))
     var data_ready_Race = pie(d3.entries(dataRace))
 
+    var colorMental = d3.scaleOrdinal()
+        .domain(data_ready_Mental)
+        .range(["#6e40aa","#9b3db3","#c83dac","#ee4395","#ff5375","#ff6b53","#ff8c38","#e8b02e","#c9d33a","#aff05b"])
+
+    var colorCause = d3.scaleOrdinal()
+        .domain(data_ready_Cause)
+        .range(["#6e40aa","#9b3db3","#c83dac","#ee4395","#ff5375","#ff6b53","#ff8c38","#e8b02e","#c9d33a","#aff05b"])
+
+    var colorRace = d3.scaleOrdinal()
+        .domain(data_ready_Race)
+        .range(["#6e40aa","#9b3db3","#c83dac","#ee4395","#ff5375","#ff6b53","#ff8c38","#e8b02e","#c9d33a","#aff05b"])
+
     var arcGenerator = d3.arc()
         .innerRadius(0)
         .outerRadius(radius)
 
+    var arc = d3.arc()
+        .innerRadius(radius * 0.2)         
+        .outerRadius(radius * 0.9)
 
-    svgPie1.selectAll("*").remove();
-    svgPie2.selectAll("*").remove();
-    svgPie3.selectAll("*").remove();
+    var outerArc = d3.arc()
+        .innerRadius(radius * 0.9)
+        .outerRadius(radius * 0.9)
 
-    svgPie1.selectAll('mySlices')
+    var div = d3.select("body").append("div")
+        .attr("class", "tooltip-donut")
+        .style("opacity", 0);
+
+    var path =  svgPie1.selectAll('mySlices')
     .data(data_ready_Mental)
     .enter()
     .append('path')
-    .attr('d', d3.arc()
-      .innerRadius(0)
-      .outerRadius(radius)
-    )
+    .attr('d', arc)
     .attr('fill', function(d){ return(colorMental(d.data.key)) })
-    .attr("stroke", "black")
+    .attr("stroke", "white")
     .style("stroke-width", "1px")
+    .on('mouseover', function (d,i) {
+        d3.select(this).transition()
+        .duration('50')
+        .attr('opacity', '0.75');
+    })
+    .on('mouseout', function (d,i) {
+        d3.select(this).transition()
+        .duration('50')
+        .attr('opacity', '1');
+    })
 
+    path.exit()
+        .remove()
+    
     svgPie1.selectAll('mySlices')
         .data(data_ready_Mental)
         .enter()
         .append('text')
-        .text(function(d){ return d.data.key})
+        .text(function(d){ 
+            if (d.data.value > 0) {
+                return d.data.key
+            } else {
+                return ""
+            }
+            
+            })
         .attr("transform", function(d) { return "translate(" + arcGenerator.centroid(d) + ")";  })
         .style("text-anchor", "middle")
         .style("font-size", 17)
@@ -598,20 +629,27 @@ function drawPieCharts(id) {
     .data(data_ready_Cause)
     .enter()
     .append('path')
-    .attr('d', d3.arc()
-      .innerRadius(0)
-      .outerRadius(radius)
-    )
+    .attr('d', arc)
     .attr('fill', function(d){ return(colorCause(d.data.key)) })
-    .attr("stroke", "black")
+    .attr("stroke", "white")
     .style("stroke-width", "1px")
+    .on('mouseover', function (d,i) {
+        d3.select(this).transition()
+        .duration('50')
+        .attr('opacity', '0.75');
+    })
+    .on('mouseout', function (d,i) {
+        d3.select(this).transition()
+        .duration('50')
+        .attr('opacity', '1');
+    })
 
     svgPie2.selectAll('mySlices')
         .data(data_ready_Cause)
         .enter()
         .append('text')
         .text(function(d){ 
-            if (d.data.value > lenght_Cause/5) {
+            if (d.data.value > lenght_Cause/7) {
                 return d.data.key
             } else {
                 return ""
@@ -634,20 +672,27 @@ function drawPieCharts(id) {
     .data(data_ready_Race)
     .enter()
     .append('path')
-    .attr('d', d3.arc()
-      .innerRadius(0)
-      .outerRadius(radius)
-    )
+    .attr('d', arc)
     .attr('fill', function(d){ return(colorRace(d.data.key)) })
-    .attr("stroke", "black")
+    .attr("stroke", "white")
     .style("stroke-width", "1px")
+    .on('mouseover', function (d,i) {
+        d3.select(this).transition()
+        .duration('50')
+        .attr('opacity', '0.75');
+    })
+    .on('mouseout', function (d,i) {
+        d3.select(this).transition()
+        .duration('50')
+        .attr('opacity', '1');
+    })
 
     svgPie3.selectAll('mySlices')
         .data(data_ready_Race)
         .enter()
         .append('text')
         .text(function(d){ 
-            if (d.data.value > lenght_Race/5) {
+            if (d.data.value > lenght_Race/7) {
                 return d.data.key
             } else {
                 return ""
@@ -947,7 +992,7 @@ function showBarChart(stateId) {
     .attr("y", d => y(d.Target))
     .attr("width", d => x(d.value))
     .attr("height", y.bandwidth()*0.75)
-    .attr("fill", "#69b3a2")
+    .attr("fill", "#FF6677")
     .attr("transform", `translate(${bwidth*0.18}, 0)`);
 
     // Labels
