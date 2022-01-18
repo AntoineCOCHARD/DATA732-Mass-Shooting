@@ -200,7 +200,6 @@ function ready(us) {
         .on('mouseover', function (d) {
             tableFirstId = 0;
             drawPieCharts(currentID);
-            setViewLabel(currentId);
             showTable(currentId);
             showBarChart(currentId);
         });
@@ -311,7 +310,6 @@ function clicked(d) {
 
     tableFirstId = 0;
     drawPieCharts(d.id);
-    setViewLabel(d.id);
     showTable(d.id);
     showBarChart(d.id);
 
