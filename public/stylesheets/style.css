@@ -6,14 +6,19 @@
 .grid-container {
   display: grid;
   grid-template-columns: repeat(3, 33vw);
-  column-gap: 3vw;
+  column-gap: 1vw;
   row-gap: 1vh;
-  grid-auto-rows: 10vh 60vh 30vh 30vh;
+  grid-auto-rows: 5vh 60vh auto 30vh;
 }
 
 .title {
   grid-column: 1 / 4;
   grid-row: 1;
+}
+
+.title2 {
+  grid-column: 1 / 4;
+  grid-row: 3;
 }
 
 .barchart {
@@ -23,7 +28,22 @@
 
 .piechart {
   grid-column: 1 /4;
-  grid-row: 3;
+  grid-row: 4;
+}
+
+.pie1 {
+  grid-column: 1 ;
+  grid-row: 4;
+}
+
+.pie2 {
+  grid-column: 2 ;
+  grid-row: 4;
+}
+
+.pie3 {
+  grid-column: 3 ;
+  grid-row: 4;
 }
 
 .map {

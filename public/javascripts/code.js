@@ -135,7 +135,15 @@ let box = document.querySelector('.barchart');
 let bwidth = box.clientWidth;
 let bheight = box.clientHeight;
 
-let svgTarget = d3.select('.barchart').append('svg')
+let map_box = document.querySelector('.map');
+let map_width = box.clientWidth;
+let map_height = box.clientHeight;
+    
+let pie_box = document.querySelector('.pie1');
+let pie_width = box.clientWidth;
+let pie_height = box.clientHeight;
+
+let svgBarChart = d3.select('.barchart').append('svg')
     .attr('class', 'center-container')
     .attr('height', bheight)
     .attr('width', bwidth)
@@ -156,35 +164,41 @@ svgMap.append('rect')
     .attr('width', width + margin.left + margin.right)
     .on('click', clicked);
 
-let svgGender = d3.select('.viz').append('svg')
-    .attr('class', 'center-container')
-    .attr('height', height + margin.top + margin.bottom)
-    .attr('width', width * 0.6 + margin.left + margin.right)
-    //.attr('transform', 'translate(5,0)');
 
 
-let svgTable = d3.select('.viz').append('svg')
-    .attr('overflow', 'auto')
-    .attr('class', 'center-container')
-    .attr('height', height * 0.7 + margin.top + 2 * margin.bottom)
-    .attr('width', width * 1.1 + margin.left + margin.right)
-    .append('g')
-    .append("foreignObject")
-    .attr('height', height * 0.7 + margin.top + margin.bottom)
-    .attr('width', width * 1.1 + margin.left + margin.right)
-    .append("xhtml:body");
+let svgPie1 = d3.select('.pie1').append('svg')
+    .attr('height', pie_height)
+    .attr('width', pie_width)
+    .append("g")
+    .attr("transform", "translate(" + pie_width / 2 + "," + pie_height / 3 + ")");
+
+let svgPie2 = d3.select('.pie2').append('svg')
+    .attr('height', pie_height)
+    .attr('width', pie_width)
+    .append("g")
+    .attr("transform", "translate(" + pie_width / 2 + "," + pie_height /3 + ")");
+
+let svgPie3 = d3.select('.pie3').append('svg')
+.attr('height', pie_height)
+.attr('width', pie_width)
+    .append("g")
+    .attr("transform", "translate(" + pie_width / 2 + "," + pie_height /3+ ")");
+
 
 let projection = d3.geoAlbersUsa()
-    .translate([width /2 , height / 2])
-    .scale(width);
+    .translate([width /1.7 , height / 2.2])
+    .scale(map_width*1.5);
 
 let path = d3.geoPath().projection(projection);
+
+
+
 
 let g = svgMap.append("g")
     .attr('class', 'center-container center-items us-state')
     .attr('transform', 'translate('+margin.left+','+margin.top+')')
-    .attr('width', width + margin.left + margin.right)
-    .attr('height', height + margin.top + margin.bottom);
+    .attr('width', map_width)
+    .attr('height', map_height);
 
 function ready(us) {
 
@@ -223,7 +237,8 @@ function ready(us) {
         .on("click", reset)
         .on('mouseover', function (d) {
             tableFirstId = 0;
-            drawPieCharts(getStateDataForPie(currentId));
+            //drawPieCharts2(getStateDataForPie(currentId));
+            drawPieCharts(currentID);
             setViewLabel(currentId);
             showTable(currentId);
             showBarChart(currentId);
@@ -265,7 +280,7 @@ function ready(us) {
         })
         .style('font-style', 'italic')
         .text(function (d) {
-            return "Map of the United States Of America representing number of mass shootings per state";
+            return "Map of the United States Of America representing number of victims of mass shootings per state";
         }).attr('x', function () {
             return 0;
         });
@@ -316,7 +331,7 @@ function ready(us) {
         .attr('y', function (d) {
             return 45;
         })
-        .text("Population density");
+        .text("Number of victims");
 
     let rangeColorToPos = d3.scaleLinear()
         .range([0, d3.select("#legendDensity").node().getBBox().width])
@@ -338,25 +353,25 @@ function ready(us) {
         .attr('y', '10');
 
     tableFirstId = 0;
-    drawPieCharts(getStateDataForPie(0));
-    setViewLabel(0);
-    showTable(0);
+    //drawPieCharts2(getStateDataForPie(0));
+    drawPieCharts(0);
+    //setViewLabel(0);
     showBarChart(0);
 }
 
 function mouseOver(d) {
     tableFirstId = 0;
-    drawPieCharts(getStateDataForPie(d.id));
-    setViewLabel(d.id);
-    showTable(d.id);
+    //drawPieCharts2(getStateDataForPie(d.id));
+    drawPieCharts(d.id);
+    //setViewLabel(d.id);
     showBarChart(d.id);
 }
 
 function mouseOut(d) {
     tableFirstId = 0;
-    drawPieCharts(getStateDataForPie(0));
-    setViewLabel(0);
-    showTable(0);
+    //drawPieCharts2(getStateDataForPie(0));
+    drawPieCharts(0);
+    //setViewLabel(0);
     showBarChart(0);
 }
 
@@ -371,7 +386,8 @@ function clicked(d) {
     currentId = d.id;
 
     tableFirstId = 0;
-    drawPieCharts(getStateDataForPie(d.id));
+    //drawPieCharts2(getStateDataForPie(d.id));
+    drawPieCharts(d.id);
     setViewLabel(d.id);
     showTable(d.id);
     showBarChart(d.id);
@@ -431,13 +447,180 @@ function reset() {
         .attr('transform', 'translate('+margin.left+','+margin.top+')');
 }
 
+
+let svgTitle2 = d3.select('.title2').append('svg')
+    .attr('class', 'center-container')
+    .attr('height', 50)
+    .attr('width', (width + width * 0.8) + 2 * margin.left + 2 * margin.right)
+    .attr('x', 0)
+    .attr('y', 0);
+
+svgTitle2.append('g')
+    .append('text')
+    .text("More informations about random targets' mass shootings")
+    .style('font-size', '25px')
+    .attr('x', function () {
+        return (width + width * 0.8) / 2 - d3.select(this).node().getBBox().width / 2;
+    })
+    .attr('y', function () {
+        return 50 - d3.select(this).node().getBBox().height / 2;
+    });
+
 // History of Mental Illness - General
 // Type of Gun - General
 // Shooter Race
 // Shooter Sex
 
+function drawPieCharts(id) {
+
+
+    var data =  {a: 9, b: 20, c:30, d:8, e:12}
+
+    var color = d3.scaleOrdinal()
+        .domain(data)
+        .range(["#98abc5", "#8a89a6", "#7b6888", "#6b486b", "#a05d56"])
+
+    if (!data) {
+        return;
+    }
+
+    dataCause = {}
+    dataMental = {"Yes": 0, "No": 0, "Unknown": 0}
+
+    if (id === 0) {
+        dataToLoop = bigData2;
+    } else {
+        if (!dataset[id]) {return;}
+        dataToLoop = dataset2[id];   
+    }
+
+    dataToLoop.forEach(function (d) {
+        if (d.Target === 'Random') {
+            if(dataCause[d["Cause"]]) {
+                dataCause[d["Cause"]] += 1;
+            } else {
+                if(d["Cause"] == "") {
+                    if (dataCause["unknown"]) {
+                        dataCause["unknown"] += 1;
+                    } else {
+                        dataCause["unknown"] = 1;
+                    }
+                } else {
+                    dataCause[d["Cause"]] = 1;
+                }
+            }
+
+            if (d["Mental Health Issues"] === "Yes") {
+                dataMental["Yes"]+=1
+            } else if (d["Mental Health Issues"] === "No") {
+                dataMental["No"]+=1
+            } else {
+                dataMental["Unknown"]+=1
+            }
+        }
+    });
+    console.log(dataCause)
+
+    var colorMental = d3.scaleOrdinal()
+        .domain(dataMental)
+        .range(["#5A60FA", "#77FA42", "#AD5024"])
+
+    var colorCause = d3.scaleOrdinal()
+        .domain(dataMental)
+        .range(["#FFDA3B", "#E68C27", "#FA583C", "#E32BBD","#8130FB" ,"#9F3BFF" , "#274CE6","#3DE4FA","#2BE372","#89FB30" ])
+
+    let radius = 100;
+    var pie = d3.pie().value(function(d) {return d.value; }).sort(null);
+    var data_ready = pie(d3.entries(data))
+
+    var data_ready_Mental = pie(d3.entries(dataMental))
+    var data_ready_Cause = pie(d3.entries(dataCause))
+
+    var arcGenerator = d3.arc()
+        .innerRadius(0)
+        .outerRadius(radius)
+
+
+    svgPie1.selectAll("*").remove();
+    svgPie2.selectAll("*").remove();
+    svgPie3.selectAll("*").remove();
+
+    svgPie1.selectAll('mySlices')
+    .data(data_ready_Mental)
+    .enter()
+    .append('path')
+    .attr('d', d3.arc()
+      .innerRadius(0)
+      .outerRadius(radius)
+    )
+    .attr('fill', function(d){ return(colorMental(d.data.key)) })
+    .attr("stroke", "black")
+    .style("stroke-width", "2px")
+    .style("opacity", 0.7)
+
+    svgPie1.selectAll('mySlices')
+        .data(data_ready_Mental)
+        .enter()
+        .append('text')
+        .text(function(d){ return d.data.key})
+        .attr("transform", function(d) { return "translate(" + arcGenerator.centroid(d) + ")";  })
+        .style("text-anchor", "middle")
+        .style("font-size", 17)
+
+
+    var lenght_Cause = 0
+
+    for (const [key, value] of Object.entries(dataCause)) {
+        lenght_Cause += value;
+      }
+
+
+    svgPie2.selectAll('mySlices')
+    .data(data_ready_Cause)
+    .enter()
+    .append('path')
+    .attr('d', d3.arc()
+      .innerRadius(0)
+      .outerRadius(radius)
+    )
+    .attr('fill', function(d){ return(colorCause(d.data.key)) })
+    .attr("stroke", "black")
+    .style("stroke-width", "1px")
+
+    svgPie2.selectAll('mySlices')
+        .data(data_ready_Cause)
+        .enter()
+        .append('text')
+        .text(function(d){ 
+            if (d.data.value > lenght_Cause/5) {
+                return d.data.key
+            } else {
+                return ""
+            }
+            
+            })
+        .attr("transform", function(d) { return "translate(" + arcGenerator.centroid(d) + ")";  })
+        .style("text-anchor", "middle")
+        .style("font-size", 17)
+
+    svgPie3.selectAll('mySlices')
+    .data(data_ready)
+    .enter()
+    .append('path')
+    .attr('d', d3.arc()
+      .innerRadius(0)
+      .outerRadius(radius)
+    )
+    .attr('fill', function(d){ return(color(d.data.key)) })
+    .attr("stroke", "black")
+    .style("stroke-width", "2px")
+    .style("opacity", 0.7)
+
+}
+
+
 // 4 Charts
-function drawPieCharts(data) {
+function drawPieCharts2(data) {
 
     if (!data) {
         return;
@@ -462,13 +645,12 @@ function drawPieCharts(data) {
         max += data[0].data[key].value;
     }
 
-    for (let i = 0; i < 2; i++) {
-        for (let j = 0; j < 2; j++) {
+    for (let i = 0; i < 3; i++) {       
 
             g = svgGender.append("g")
                 .attr('class', 'center-container')
                 //.attr("transform", "translate(" + (radius * (2 * i + 1)) + "," + radius + ")")
-                .attr("transform", "translate(" + (radius * (3 * i + 1)) + "," + ((2 * j + 1) * radius) + ")")
+                .attr("transform", "translate(" + (radius * (3 * i + 1)) + "," + (radius) + ")")
                 .attr('width', width * 0.8 + margin.left + margin.right)
                 .attr('height', height + margin.top + margin.bottom);
 
@@ -551,17 +733,17 @@ function drawPieCharts(data) {
                 })
                 .style('font-style', 'italic')
                 .text(function (d) {
-                    return "Fig. " + (count + 2) + " : " + data[count].title;
+                    return "Fig ."+count+" : " + data[count].title;
                 }).attr('x', function () {
                     return - (radius * 0.75);
                 });
 
             count++;
-        }
+        
     }
 }
 
-function setViewLabel(id) {
+/*function setViewLabel(id) {
 
     // Know which state we are focusing on
     svgGender.append("g")
@@ -590,128 +772,17 @@ function setViewLabel(id) {
 
     
 
-}
+}*/
 
 function getKeyByValue(object, value) {
     return Object.keys(object).find(key => object[key] === value);
 }
 
-// Titles
 
-// Table here
-
-// Number of shooting
-// Number of victims
-// Age
-// Date
-// City
-// Fate of shooter
-
-// Show Table
-function showTable(stateID) {
-
-    let theData;
-
-    if (stateID == 0) {
-        theData = bigData;
-    } else {
-        theData = dataset[stateID];
-    }
-
-    // If there is no shooting we return
-    if (!theData || theData.length == 0) {
-        return;
-    }
-
-    svgTable.selectAll('table').remove();
-
-    let table = svgTable
-            .append("table")
-            .attr("class", "table table-condensed table-striped");
-
-    let thead = table.append("thead");
-    thead.html('<th>Date</th><th>City</th><th>Age of shooter</th><th>Number of victims</th><th>Fate of Shooter</th>');
-
-    let tbody = table.append("tbody")
-        .on("wheel.zoom", function () {
-            let direction = d3.event.wheelDelta < 0 ? 'down' : 'up';
-
-            if (direction === 'up') {
-                tableFirstId--;
-            } else {
-                tableFirstId++;
-            }
-
-            showTable(currentId);
-        });
-
-    let date, age, city, fate, victims;
-
-    if (tableFirstId >= theData.length) {
-        tableFirstId --;
-    }
-
-    if (tableFirstId < 0) {
-        tableFirstId = 0;
-    }
-
-    theData.slice(tableFirstId, tableFirstId + 9).forEach(function (d) {
-        date = "Unknown";
-        age = "-";
-        city = "Unknown";
-        fate = "Unknown";
-        victims = "-";
-
-        if (d.Date) {
-            date = d.Date;
-        }
-
-        if (d.fields.average_shooter_age) {
-            age = d.fields.average_shooter_age;
-        }
-
-        if (d.fields.city) {
-            city = d.fields.city;
-        }
-
-        if (d.fields.fate_of_shooter_at_the_scene) {
-            fate = d.fields.fate_of_shooter_at_the_scene;
-        }
-
-        if (d.fields.number_of_victims_injured) {
-            victims = d.fields.number_of_victims_injured;
-        }
-
-        tbody.append('tr')
-            .html(function () {
-                return '<td>' + date + '</td>' + '<td>' + city + '</td>' + '<td>' + age + '</td>' + '<td>' + victims + '</td>' + '<td>' + fate + '</td>';
-            })
-    });
-
-
-    // Legend plot
-    table.append('g').append("text")
-        .attr("transform", "translate(0," + 60 + ")")
-        .attr('y', function (d) {
-            return 0;
-        })
-        .style('font-style', 'italic')
-        .text(function (d) {
-            if (stateID === 0) {
-                return "Fig. 7 : Different mass shooting in the US";
-            }
-            if (stateID < 10) {
-                return "Fig. 7 : Different mass shooting in " + getKeyByValue(fips, "0" + stateID);
-            }
-            return "Fig. 7 : Different mass shooting in " + getKeyByValue(fips, "" + stateID);
-        }).attr('x', function () {
-        return 0;
-    });
-}
 
 function showBarChart(stateId) {
 
-    svgTarget.selectAll("*").remove();
+    svgBarChart.selectAll("*").remove();
 
     let theData;
     
@@ -809,8 +880,8 @@ function showBarChart(stateId) {
     const x = d3.scaleLinear()
     .domain([0, max+1])
     .range([ 0, bwidth*0.75]);
-    svgTarget.append("g")
-    .attr("transform", `translate(${bwidth*0.18}, ${bheight*0.85})`)
+    svgBarChart.append("g")
+    .attr("transform", `translate(${bwidth*0.18}, ${bheight*0.8})`)
     .call(d3.axisBottom(x))
     .selectAll("text")
       .attr("transform", "translate(-10,0)rotate(-45)")
@@ -818,15 +889,15 @@ function showBarChart(stateId) {
 
   // Y axis
   const y = d3.scaleBand()
-    .range([ 0, bheight*0.85 ])
+    .range([ 0, bheight*0.8 ])
     .domain(dataToDisplay.map(d => d.Target))
     .padding(.1);
-    svgTarget.append("g")
+    svgBarChart.append("g")
     .attr("transform", `translate(${bwidth*0.18}, 0)`)
     .call(d3.axisLeft(y))
 
   //Bars
-  svgTarget.selectAll("myRect")
+  svgBarChart.selectAll("myRect")
     .data(dataToDisplay)
     .enter()
     .append("rect")
@@ -838,7 +909,7 @@ function showBarChart(stateId) {
     .attr("transform", `translate(${bwidth*0.18}, 0)`);
 
     // Labels
-    svgTarget.selectAll(".label")
+    svgBarChart.selectAll(".label")
         .data(dataToDisplay)
         .enter()
         .append("text")
@@ -853,15 +924,15 @@ function showBarChart(stateId) {
         .attr("dy", "-.7em")
         .attr("transform", `translate(${bwidth*0.18}, 0)`);
 
-    svgTarget.append('g').append("text")
-        .attr("transform", `translate(${bwidth*0.18}, ${bheight*0.95})`)
+    svgBarChart.append('g').append("text")
+        .attr("transform", `translate(${bwidth*0.18}, ${bheight*0.9})`)
         .attr('y', function (d) {
             return 0;
         })
         .style('font-style', 'italic')
         .text(function (d) {
             if (stateId === 0) {
-                return "Targets of mass shooting in the US";
+                return "Number of mass shooting per target type in the US";
             }
             if (stateId < 10) {
                 return "Targets of mass shooting in " + getKeyByValue(fips, "0" + stateId);
