@@ -141,23 +141,23 @@ let svgPie1 = d3.select('.pie1').append('svg')
     .attr('height', pie_height)
     .attr('width', pie_width)
     .append("g")
-    .attr("transform", "translate(" + pie_width / 2 + "," + pie_height / 2.5 + ")");
+    .attr("transform", "translate(" + pie_width / 2 + "," + pie_height / 2 + ")");
 
 let svgPie2 = d3.select('.pie2').append('svg')
     .attr('height', pie_height)
     .attr('width', pie_width)
     .append("g")
-    .attr("transform", "translate(" + pie_width / 2 + "," + pie_height /2.5 + ")");
+    .attr("transform", "translate(" + pie_width / 2 + "," + pie_height /2 + ")");
 
 let svgPie3 = d3.select('.pie3').append('svg')
     .attr('height', pie_height)
     .attr('width', pie_width)
     .append("g")
-    .attr("transform", "translate(" + pie_width / 2 + "," + pie_height /2.5+ ")");
+    .attr("transform", "translate(" + pie_width / 2 + "," + pie_height /2+ ")");
 
 let projection = d3.geoAlbersUsa()
-    .translate([width /1.5 , height / 2.2])
-    .scale(map_height*1.5);
+    .translate([map_width , map_height / 2.5])
+    .scale(map_height*1.8);
 
 let path = d3.geoPath().projection(projection);
 
@@ -240,22 +240,28 @@ function ready(us) {
         .style('font-style', 'italic');
 
     g.append("text")
-        .attr('x', 10)
-        .attr('y', 0)
+        .attr('x', 30)
+        .attr('y', map_height/2)
         .text("0")
         .style('font-size', '12px');
 
     g.append("text")
-        .attr('x', 140)
-        .attr('y', 0)
+        .attr('x', 170)
+        .attr('y', map_height/2)
         .text(maxShooting)
         .style('font-size', '12px');
 
     g.append("text")
         .attr('id', 'legendDensity')
-        .attr('x', 15)
-        .attr('y', 45)
+        .attr('x', 45)
+        .attr('y', map_height/2 +45)
         .text("Number of victims");
+
+    g.append("text")
+        .attr('id', 'legendDensity')
+        .attr('x', map_width/2 )
+        .attr('y', map_height - 30)
+        .text("Map of the United States Of America representing number of victims of mass shootings per state");
 
     let rangeColorToPos = d3.scaleLinear()
         .range([0, d3.select("#legendDensity").node().getBBox().width])
@@ -267,14 +273,14 @@ function ready(us) {
         .enter()
         .append('rect')
         .attr('x', function(d) {
-            return 15 + rangeColorToPos(d);
+            return 45 + rangeColorToPos(d);
         })
         .attr('width', 11)
         .attr('height', 15)
         .style('fill', function(d) {
             return statesShootingColor(d);
         })
-        .attr('y', '10');
+        .attr('y', map_height/2 + 10);
 
     tableFirstId = 0;
     drawPieCharts(0);
@@ -352,7 +358,7 @@ let svgTitle2 = d3.select('.title2').append('svg')
 
 svgTitle2.append('g')
     .append('text')
-    .text("Informations about the killers of random mass shooting")
+    .text("Informations about the killers of mass shooting, where the victims were random people")
     .style('font-size', '25px')
     .attr('x', function () {
         return (width + width * 0.8) / 2 - d3.select(this).node().getBBox().width / 2;
@@ -429,7 +435,7 @@ function drawPieCharts(id) {
 
     
 
-    let radius = pie_width/3;
+    let radius = pie_height/2;
     var pie = d3.pie().value(function(d) {return d.value; })
         .sort(function(a, b) {return d3.descending(a.value, b.value);} )
 
@@ -455,7 +461,7 @@ function drawPieCharts(id) {
 
     var arc = d3.arc()
         .innerRadius(radius * 0.2)         
-        .outerRadius(radius * 0.9)
+        .outerRadius(radius * 0.8)
 
     var path =  svgPie1.selectAll('mySlices')
     .data(data_ready_Mental)
@@ -731,7 +737,7 @@ function showBarChart(stateId) {
         .attr('y', function (d) {
             return 0;
         })
-        .style('font-style', 'italic')
+        
         .text(function (d) {
             if (stateId === 0) {
                 return "Number of mass shooting per target type in the US";
