@@ -117,7 +117,6 @@ svgMap.append('rect')
     .attr('class', 'background center-container')
     .attr('height', height + margin.top + margin.bottom)
     .attr('width', width + margin.left + margin.right)
-    .on('click', clicked);
 
 let svgPie1 = d3.select('.pie1').append('svg')
     .attr('height', pie_height)
@@ -180,9 +179,7 @@ function ready(us) {
         .attr("class", "county-boundary")
         .on("click", reset)
         .on('mouseover', function (d) {
-            tableFirstId = 0;
             drawPieCharts(currentID);
-            showTable(currentId);
             showBarChart(currentId);
         });
 
@@ -204,7 +201,6 @@ function ready(us) {
         })
         .attr("d", path)
         .attr("class", "state")
-        .on("click", clicked)
         .on("mouseover", mouseOver)
         .on('mouseout', mouseOut);
 
@@ -257,56 +253,54 @@ function ready(us) {
         })
         .attr('y', map_height/2 + 10);
 
-    tableFirstId = 0;
     drawPieCharts(0);
     showBarChart(0);
 }
 
 function mouseOver(d) {
-    tableFirstId = 0;
     drawPieCharts(d.id);
     showBarChart(d.id);
 }
 
 function mouseOut(d) {
-    tableFirstId = 0;
     drawPieCharts(0);
     showBarChart(0);
 }
 
-function clicked(d) {
+function clicked_pie1(d) {
 
-    currentId = 0;
+    drawPieCharts(0);
 
-    if (d3.select('.background').node() === this) return reset();
+    svgPie1.append('g').append("text")
+        //.attr("transform", `translate(${pie_width*0.5 - margin.left}, ${pie_height*0.8})`)
+        .text(d.data.key + " : " + d.data.value)
+        .attr("transform", `translate(${0}, ${pie_height*0.45})`)
+        .style("text-anchor", "middle")
 
-    if (active.node() === this) return reset();
+}
 
-    currentId = d.id;
+function clicked_pie2(d) {
 
-    tableFirstId = 0;
-    drawPieCharts(d.id);
-    showTable(d.id);
-    showBarChart(d.id);
+    drawPieCharts(0);
 
-    active.classed("active", false);
-    active = d3.select(this).classed("active", true);
+    svgPie2.append('g').append("text")
+        //.attr("transform", `translate(${pie_width*0.5 - margin.left}, ${pie_height*0.8})`)
+        .text(d.data.key + " : " + d.data.value)
+        .attr("transform", `translate(${0}, ${pie_height*0.45})`)
+        .style("text-anchor", "middle")
 
-    let bounds = path.bounds(d),
-        dx = bounds[1][0] - bounds[0][0],
-        dy = bounds[1][1] - bounds[0][1],
-        x = (bounds[0][0] + bounds[1][0]) / 2,
-        y = (bounds[0][1] + bounds[1][1]) / 2,
-        scale = .9 / Math.max(dx / width, dy / height),
-        translate = [width / 2 - scale * x, height / 2 - scale * y];
+}
 
-    g.transition()
-        .duration(1000)
-        .style("stroke-width", 1.5 / scale + "px")
-        .attr("transform", "translate(" + translate + ")scale(" + scale + ")");
+function clicked_pie3(d) {
 
-    // Hide the states dots
-    d3.selectAll(".statesPoints").transition().duration(750).style('visibility', "hidden");
+    drawPieCharts(0);
+
+    svgPie3.append('g').append("text")
+        //.attr("transform", `translate(${pie_width*0.5 - margin.left}, ${pie_height*0.8})`)
+        .text(d.data.key + " : " + d.data.value)
+        .attr("transform", `translate(${0}, ${pie_height*0.45})`)
+        .style("text-anchor", "middle")
+
 }
 
 function reset() {
@@ -426,6 +420,7 @@ function drawPieCharts(id) {
     .attr('fill', function(d){ return(colorMental(d.data.key)) })
     .attr("stroke", "white")
     .style("stroke-width", "1px")
+    .on("click", clicked_pie1)
     .on('mouseover', function (d,i) {
         d3.select(this).transition()
         .duration('50')
@@ -436,6 +431,7 @@ function drawPieCharts(id) {
         .duration('50')
         .attr('opacity', '1');
     })
+    
 
     path.exit()
         .remove()
@@ -471,6 +467,7 @@ function drawPieCharts(id) {
     .attr('fill', function(d){ return(colorCause(d.data.key)) })
     .attr("stroke", "white")
     .style("stroke-width", "1px")
+    .on("click", clicked_pie2)
     .on('mouseover', function (d,i) {
         d3.select(this).transition()
         .duration('50')
@@ -512,6 +509,7 @@ function drawPieCharts(id) {
     .attr('fill', function(d){ return(colorRace(d.data.key)) })
     .attr("stroke", "white")
     .style("stroke-width", "1px")
+    .on("click", clicked_pie3)
     .on('mouseover', function (d,i) {
         d3.select(this).transition()
         .duration('50')
