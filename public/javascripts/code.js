@@ -201,8 +201,9 @@ function ready(us) {
         })
         .attr("d", path)
         .attr("class", "state")
-        .on("mouseover", mouseOver)
-        .on('mouseout', mouseOut);
+        .on("click", clicked)
+        //.on("mouseover", mouseOver)
+        //.on('mouseout', mouseOut);
 
     g.append("path")
         .datum(topojson.mesh(us, us.objects.states, function(a, b) { return a !== b; }))
@@ -267,9 +268,22 @@ function mouseOut(d) {
     showBarChart(0);
 }
 
+function clicked(d){
+    console.log(d.id)
+    currentId = d.id;
+    drawPieCharts(d.id);
+    showBarChart(d.id);
+}
+
+function reset() {
+    currentId = 0;
+    drawPieCharts(0);
+    showBarChart(0);
+}
+
 function clicked_pie1(d) {
 
-    drawPieCharts(0);
+    drawPieCharts(currentId);
 
     svgPie1.append('g').append("text")
         //.attr("transform", `translate(${pie_width*0.5 - margin.left}, ${pie_height*0.8})`)
@@ -281,7 +295,7 @@ function clicked_pie1(d) {
 
 function clicked_pie2(d) {
 
-    drawPieCharts(0);
+    drawPieCharts(currentId);
 
     svgPie2.append('g').append("text")
         //.attr("transform", `translate(${pie_width*0.5 - margin.left}, ${pie_height*0.8})`)
@@ -293,7 +307,7 @@ function clicked_pie2(d) {
 
 function clicked_pie3(d) {
 
-    drawPieCharts(0);
+    drawPieCharts(currentId);
 
     svgPie3.append('g').append("text")
         //.attr("transform", `translate(${pie_width*0.5 - margin.left}, ${pie_height*0.8})`)
@@ -303,18 +317,6 @@ function clicked_pie3(d) {
 
 }
 
-function reset() {
-    active.classed("active", false);
-    active = d3.select(null);
-
-    d3.selectAll(".pointsToView").transition().duration(750).remove();
-    d3.selectAll(".statesPoints").transition().delay(750).duration(1500).style('visibility', "visible");
-
-    g.transition()
-        .duration(750)
-        .style("stroke-width", "1.5px")
-        .attr('transform', 'translate('+margin.left+','+margin.top+')');
-}
 
 //Mental Health issues
 //Cause of the shooting
