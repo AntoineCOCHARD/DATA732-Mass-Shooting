@@ -93,8 +93,8 @@ let map_width = box.clientWidth;
 let map_height = box.clientHeight;
     
 let pie_box = document.querySelector('.pie1');
-let pie_width = box.clientWidth;
-let pie_height = box.clientHeight;
+let pie_width = pie_box.clientWidth;
+let pie_height = pie_box.clientHeight;
 
 let svgBarChart = d3.select('.barchart').append('svg')
     .attr('class', 'center-container')
@@ -120,19 +120,19 @@ let svgPie1 = d3.select('.pie1').append('svg')
     .attr('height', pie_height)
     .attr('width', pie_width)
     .append("g")
-    .attr("transform", "translate(" + pie_width / 2 + "," + pie_height / 2 + ")");
+    .attr("transform", "translate(" + pie_width / 2 + "," + pie_height *0.45 + ")");
 
 let svgPie2 = d3.select('.pie2').append('svg')
     .attr('height', pie_height)
     .attr('width', pie_width)
     .append("g")
-    .attr("transform", "translate(" + pie_width / 2 + "," + pie_height /2 + ")");
+    .attr("transform", "translate(" + pie_width / 2 + "," + pie_height *0.45 + ")");
 
 let svgPie3 = d3.select('.pie3').append('svg')
     .attr('height', pie_height)
     .attr('width', pie_width)
     .append("g")
-    .attr("transform", "translate(" + pie_width / 2 + "," + pie_height /2+ ")");
+    .attr("transform", "translate(" + pie_width / 2 + "," + pie_height *0.45+ ")");
 
 let projection = d3.geoAlbersUsa()
     .translate([map_width , map_height / 2.5])
@@ -282,7 +282,6 @@ function clicked_pie1(d) {
     drawPieCharts(currentId);
 
     svgPie1.append('g').append("text")
-        //.attr("transform", `translate(${pie_width*0.5 - margin.left}, ${pie_height*0.8})`)
         .text(d.data.key + " : " + d.data.value)
         .attr("transform", `translate(${0}, ${pie_height*0.45})`)
         .style("text-anchor", "middle")
@@ -294,7 +293,6 @@ function clicked_pie2(d) {
     drawPieCharts(currentId);
 
     svgPie2.append('g').append("text")
-        //.attr("transform", `translate(${pie_width*0.5 - margin.left}, ${pie_height*0.8})`)
         .text(d.data.key + " : " + d.data.value)
         .attr("transform", `translate(${0}, ${pie_height*0.45})`)
         .style("text-anchor", "middle")
@@ -306,7 +304,6 @@ function clicked_pie3(d) {
     drawPieCharts(currentId);
 
     svgPie3.append('g').append("text")
-        //.attr("transform", `translate(${pie_width*0.5 - margin.left}, ${pie_height*0.8})`)
         .text(d.data.key + " : " + d.data.value)
         .attr("transform", `translate(${0}, ${pie_height*0.45})`)
         .style("text-anchor", "middle")

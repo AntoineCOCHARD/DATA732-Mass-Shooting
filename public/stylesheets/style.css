@@ -16,7 +16,7 @@ body {
   grid-template-columns: repeat(3, 31%);
   column-gap: 2vw;
   row-gap: 1vh;
-  grid-auto-rows: auto 45vh auto auto auto;
+  grid-auto-rows: auto 45vh auto 40vh auto;
 }
 
 .title {
