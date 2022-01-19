@@ -41,8 +41,6 @@ d3.json('data/fipsToState.json').then(function (data) {
             capitals[Number(fips[d.name])] = [d.long, d.lat];
         });
     });
-    
-
     return data;
 
 
@@ -202,8 +200,6 @@ function ready(us) {
         .attr("d", path)
         .attr("class", "state")
         .on("click", clicked)
-        //.on("mouseover", mouseOver)
-        //.on('mouseout', mouseOut);
 
     g.append("path")
         .datum(topojson.mesh(us, us.objects.states, function(a, b) { return a !== b; }))
