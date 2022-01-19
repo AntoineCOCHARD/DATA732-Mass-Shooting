@@ -1,5 +1,8 @@
 let margin = { top: 10, bottom: 10, left: 10, right: 10 };
 
+//colorSet = ["#6e40aa", "#9b3db3", "#c83dac", "#ee4395", "#ff5375", "#ff6b53", "#ff8c38", "#e8b02e", "#c9d33a", "#aff05b"]
+var colorSet = ["#a50026","#d73027","#f46d43","#fdae61","#fee08b","#d9ef8b","#a6d96a","#66bd63","#1a9850","#006837"]
+
 let width = 960;
 width = width - margin.left - margin.right;
 
@@ -13,7 +16,7 @@ let globalPopulation = { "Alabama": 4779736, "Alaska": 710231, "Arizona": 639201
 
 let statesShootingColor = d3.scaleLinear()
     .domain([0, 635])
-    .range(["#6e40aa", "#ff5375", "#aff05b"]);
+    .range([colorSet[6], colorSet[0]]);
 
 let scaleProportionShootingsPerState;
 
@@ -389,17 +392,18 @@ function drawPieCharts(id) {
     var data_ready_Cause = pie(d3.entries(dataCause))
     var data_ready_Race = pie(d3.entries(dataRace))
 
+    
     var colorMental = d3.scaleOrdinal()
         .domain(data_ready_Mental)
-        .range(["#6e40aa", "#9b3db3", "#c83dac", "#ee4395", "#ff5375", "#ff6b53", "#ff8c38", "#e8b02e", "#c9d33a", "#aff05b"])
+        .range(colorSet)
 
     var colorCause = d3.scaleOrdinal()
         .domain(data_ready_Cause)
-        .range(["#6e40aa", "#9b3db3", "#c83dac", "#ee4395", "#ff5375", "#ff6b53", "#ff8c38", "#e8b02e", "#c9d33a", "#aff05b"])
+        .range(colorSet)
 
     var colorRace = d3.scaleOrdinal()
         .domain(data_ready_Race)
-        .range(["#6e40aa", "#9b3db3", "#c83dac", "#ee4395", "#ff5375", "#ff6b53", "#ff8c38", "#e8b02e", "#c9d33a", "#aff05b"])
+        .range(colorSet)
 
     var arcGenerator = d3.arc()
         .innerRadius(0)
