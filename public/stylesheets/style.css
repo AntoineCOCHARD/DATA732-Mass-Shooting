@@ -22,6 +22,7 @@ body {
 .title {
   grid-column: 1 / 4;
   grid-row: 1;
+  font-size: 35px;
 }
 
 .title2 {
@@ -62,6 +63,10 @@ body {
 .square {
   background-color: whitesmoke;
   border-radius: 30px;
+}
+
+.big-text {
+  font-size: 25px;
 }
 
 #states {

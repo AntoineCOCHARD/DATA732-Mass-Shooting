@@ -85,24 +85,6 @@ d3.json('data/fipsToState.json').then(function (data) {
 
 // SVGs
 
-let svgTitle = d3.select('.title').append('svg')
-    .attr('class', 'center-container')
-    .attr('height', 50)
-    .attr('width', (width + width * 0.8) + 2 * margin.left + 2 * margin.right)
-    .attr('x', 0)
-    .attr('y', 0);
-
-svgTitle.append('g')
-    .append('text')
-    .text('Mass Shootings repartition in the US')
-    .style('font-size', '35px')
-    .attr('x', function () {
-        return (width + width * 0.8) / 2 - d3.select(this).node().getBBox().width / 2;
-    })
-    .attr('y', function () {
-        return 50 - d3.select(this).node().getBBox().height / 2;
-    });
-
 // Size of the differents elements
 let box = document.querySelector('.barchart');
 let bwidth = box.clientWidth;
@@ -256,12 +238,6 @@ function ready(us) {
         .attr('y', map_height/2 +45)
         .text("Number of victims");
 
-    g.append("text")
-        .attr('id', 'legendDensity')
-        .attr('x', map_width/2 )
-        .attr('y', map_height - 30)
-        .text("Map of the United States Of America representing number of victims of mass shootings per state");
-
     let rangeColorToPos = d3.scaleLinear()
         .range([0, d3.select("#legendDensity").node().getBBox().width])
         .domain([0, maxShooting]);
@@ -345,25 +321,6 @@ function reset() {
         .style("stroke-width", "1.5px")
         .attr('transform', 'translate('+margin.left+','+margin.top+')');
 }
-
-
-let svgTitle2 = d3.select('.title2').append('svg')
-    .attr('class', 'center-container')
-    .attr('height', 50)
-    .attr('width', (width + width * 0.8) + 2 * margin.left + 2 * margin.right)
-    .attr('x', 0)
-    .attr('y', 0);
-
-svgTitle2.append('g')
-    .append('text')
-    .text("Informations about the killers of mass shooting, where the victims were random people")
-    .style('font-size', '25px')
-    .attr('x', function () {
-        return (width + width * 0.8) / 2 - d3.select(this).node().getBBox().width / 2;
-    })
-    .attr('y', function () {
-        return 50 - d3.select(this).node().getBBox().height / 2;
-    });
 
 //Mental Health issues
 //Cause of the shooting
@@ -687,7 +644,7 @@ function showBarChart(stateId) {
     .domain([0, max+1])
     .range([ 0, bwidth*0.75]);
     svgBarChart.append("g")
-    .attr("transform", `translate(${bwidth*0.18}, ${bheight*0.8})`)
+    .attr("transform", `translate(${bwidth*0.18}, ${bheight*0.9})`)
     .call(d3.axisBottom(x))
     .selectAll("text")
       .attr("transform", "translate(-10,0)rotate(-45)")
@@ -699,7 +656,7 @@ function showBarChart(stateId) {
     .domain(dataToDisplay.map(d => d.Target))
     .padding(.1);
     svgBarChart.append("g")
-    .attr("transform", `translate(${bwidth*0.18}, 0)`)
+    .attr("transform", `translate(${bwidth*0.18}, ${bheight*0.1})`)
     .call(d3.axisLeft(y))
 
   //Bars
@@ -712,7 +669,7 @@ function showBarChart(stateId) {
     .attr("width", d => x(d.value))
     .attr("height", y.bandwidth()*0.75)
     .attr("fill", "#FF6677")
-    .attr("transform", `translate(${bwidth*0.18}, 0)`);
+    .attr("transform", `translate(${bwidth*0.18}, ${bheight*0.1})`);
 
     // Labels
     svgBarChart.selectAll(".label")
@@ -728,14 +685,14 @@ function showBarChart(stateId) {
         .text( d => { return d.value; })
         .attr("x",  d => { return x(d.value) + .1; })
         .attr("dy", "-.7em")
-        .attr("transform", `translate(${bwidth*0.18}, 0)`);
+        .attr("transform", `translate(${bwidth*0.18}, ${bheight*0.1})`);
 
     svgBarChart.append('g').append("text")
-        .attr("transform", `translate(${bwidth*0.18}, ${bheight*0.9})`)
+        .attr("transform", `translate(${bwidth*0.5 - margin.left}, ${bheight*0.05})`)
+        .style("text-anchor", "middle")
         .attr('y', function (d) {
             return 0;
         })
-        
         .text(function (d) {
             if (stateId === 0) {
                 return "Number of mass shooting per target type in the US";
