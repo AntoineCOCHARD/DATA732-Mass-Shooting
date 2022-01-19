@@ -391,7 +391,6 @@ function drawPieCharts(id) {
     var data_ready_Mental = pie(d3.entries(dataMental))
     var data_ready_Cause = pie(d3.entries(dataCause))
     var data_ready_Race = pie(d3.entries(dataRace))
-
     
     var colorMental = d3.scaleOrdinal()
         .domain(data_ready_Mental)
@@ -668,7 +667,7 @@ function showBarChart(stateId) {
         .attr("y", d => y(d.Target))
         .attr("width", d => x(d.value))
         .attr("height", y.bandwidth() * 0.75)
-        .attr("fill", "#FF6677")
+        .attr("fill", colorSet[1])
         .attr("transform", `translate(${bwidth * 0.18}, ${bheight * 0.1})`);
 
     // Labels
