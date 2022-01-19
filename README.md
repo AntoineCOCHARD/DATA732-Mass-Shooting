@@ -8,7 +8,9 @@ We decided to show :
 - A bar chart showing the categories of people killed during mass shootings.
 - Three pie charts showing if, only for the random shootings, the killer had mental health issues, the cause of the shooting and the race of the shooter.
 
-In the beggining, the bar chart and the pie charts show data about all of the USA, and are actuallized with data of specific states when hovering them with the mouse on the map.
+In the beggining, the bar chart and the pie charts show data about all of the USA, and are actuallized with data of specific states when clicking on them with the mouse on the map. 
+To show the global data again, just click on the "Global Data" button.
+At any moment, you can click on the pie charts to show the number corresponding to the chart slice.
 
 ## How to Use :
 
